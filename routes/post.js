@@ -4,11 +4,12 @@ const { check } = require("express-validator");
 const { existsPostById } = require('../helpers/db-validators');
 const validateFields = require('../middlewares/validateFields');
 
-const { postGet, postsPost, postPut, postDelete } = require('../controllers/posts');
+const { postsGet, postGet, postsPost, postPut, postDelete } = require('../controllers/posts');
 
 
 const router = Router();
 
+router.get('/', postsGet);
 
 router.get('/:id', [
     check('id', 'Is not a valid ID').isMongoId(),

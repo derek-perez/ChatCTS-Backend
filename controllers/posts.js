@@ -1,6 +1,11 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
 
+const postsGet = async (req, res) => {
+    const posts = await Promise.all([Post.find()]);
+
+    res.json(posts);
+}
 
 const postGet = async (req, res) => {
     const post = await Post.findById(req.params.id);
@@ -46,6 +51,7 @@ const postDelete = async (req, res) => {
 
 
 module.exports = {
+    postsGet,
     postGet,
     postsPost,
     postPut,
