@@ -3,11 +3,11 @@ const Message = require('../models/Message');
 const Post = require('../models/Post');
 
 
-const emailAlreadyExists = async (email = '') => {
-    const existsUserByEmail = await User.findOne({ email });
+const usernameAlreadyExists = async (username = '') => {
+    const existsUserByUsername = await User.findOne({ username });
 
-    if (existsUserByEmail) {
-        throw new Error(`The email: ${email} is already registered`);
+    if (existsUserByUsername) {
+        throw new Error(`The username: ${username} is already registered`);
     }
 }
 
@@ -49,7 +49,7 @@ const existsPostById = async (id) => {
 
 
 module.exports = {
-    emailAlreadyExists,
+    usernameAlreadyExists,
     existsUserById,
     existsMessageById,
     existsPostById

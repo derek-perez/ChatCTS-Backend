@@ -19,6 +19,13 @@ const UserSchema = Schema({
     profilePicture: {
         type: String
     },
+    stayLoggedIn: {
+        type: Boolean,
+        default: false
+    },
+    info: {
+        type: String
+    },
     phone: {
         type: String
     },
@@ -27,12 +34,21 @@ const UserSchema = Schema({
         ref: 'User',
         default: []
     },
+    socialMedia: {
+        type: Schema.Types.Object,
+        default: {}
+    },
     messages: {
         type: [Schema.Types.ObjectId],
         ref: 'Message',
         default: []
     },
     posts: {
+        type: [Schema.Types.ObjectId],
+        ref: 'Post',
+        default: []
+    },
+    postsLiked: {
         type: [Schema.Types.ObjectId],
         ref: 'Post',
         default: []

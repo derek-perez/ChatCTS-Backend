@@ -13,7 +13,20 @@ const PostSchema = Schema({
     fromUser: {
         type: [Schema.Types.ObjectId],
         ref: 'User',
+        default: [],
+        required: [true, 'The ID from user is required']
+    },
+    comments: {
+        type: [Schema.Types.Object],
         default: []
+    },
+    likes: {
+        type: Number,
+        default: 0
+    },
+    reTweets: {
+        type: Number,
+        default: 0
     }
 });
 

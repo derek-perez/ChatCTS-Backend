@@ -1,8 +1,6 @@
 const bcryptjs = require('bcryptjs');
 const User = require('../models/User');
 
-const generateJWT = require('../helpers/generateJWT');
-
 
 const userGet = async (req, res) => {
     const user = await User.findById(req.params.id);
@@ -10,23 +8,22 @@ const userGet = async (req, res) => {
     res.json(user);
 }
 
+const getUserByUsername = async (req, res) => {
+    const username = req.params.username;
+    const user = await User.findOne({ username });
+
+    res.json(user);
+}
+
 const usersFriendsGet = async (req, res) => {
-    const { friends, ...rest } = await User.findById(req.params.id);
+    const { friends } = await User.findById(req.params.id);
 
-    const users = [];
-
-    friends.map(async (fID) => {
-        const f = await User.findById(fID);
-
-        users.push(f);
-    })
-
-    res.json(users);
+    res.json(friends);
 }
 
 const usersPost = async (req, res) => {
-    const { name, email, password, profilePicture, username } = req.body;
-    const user = new User({ name, email, password, profilePicture, username });
+    const { name, email, password, profilePicture, info, username, socialMedia } = req.body;
+    const user = new User({ name, email, password, profilePicture, info, username, socialMedia });
 
     // Encrypt password
     const salt = bcryptjs.genSaltSync();
@@ -35,13 +32,7 @@ const usersPost = async (req, res) => {
     // Store on DB
     await user.save();
 
-    // Generate JWT
-    const token = await generateJWT(user._id);
-
-    res.json({
-        user,
-        token
-    })
+    res.json(user)
 };
 
 const userFriendsPut = async (req, res) => {
@@ -82,6 +73,7 @@ const userDelete = async (req, res) => {
 
 module.exports = {
     userGet,
+    getUserByUsername,
     usersFriendsGet,
     usersPost,
     userFriendsPut,

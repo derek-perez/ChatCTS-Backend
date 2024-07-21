@@ -3,9 +3,9 @@ const User = require('../models/User');
 
 
 const messageGet = async (req, res) => {
-    const message = await message.findById(req.params.id);
+    const message = await Message.findById(req.params.id);
 
-    res.json(user);
+    res.json(message);
 }
 
 const messagesPost = async (req, res) => {
@@ -29,7 +29,9 @@ const messagesPost = async (req, res) => {
 
     addMessageToUser();
 
-    res.json(message);
+    res.json({
+        msg: 'Sended'
+    });
 }
 
 const messagePut = async (req, res) => {
