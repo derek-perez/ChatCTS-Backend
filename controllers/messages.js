@@ -8,8 +8,8 @@ const messageGet = async (req, res) => {
     res.json(message);
 }
 
-const messagesPost = async (req, res) => {
-    const { text, date, fromUser, toUser } = req.body;
+const messagesPost = async (req) => {
+    const { text, date, fromUser, toUser } = req;
     const message = new Message({ text, date, fromUser, toUser });
 
     await message.save();
@@ -17,21 +17,19 @@ const messagesPost = async (req, res) => {
     const addMessageToUser = async () => {
         const userMain = await User.findById(fromUser);
         const userFriend = await User.findById(toUser);
-        
+
         const msg = await Message.findOne({ text });
-        
+
         userMain.messages.push(msg._id);
         userFriend.messages.push(msg._id);
-        
+
         await userMain.save();
         await userFriend.save();
     }
 
     addMessageToUser();
 
-    res.json({
-        msg: 'Sended'
-    });
+    return message;
 }
 
 const messagePut = async (req, res) => {

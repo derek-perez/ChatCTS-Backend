@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const generateJWT = (uid = '') => {
@@ -6,9 +7,7 @@ const generateJWT = (uid = '') => {
 
         const payload = { uid };
 
-        jwt.sign(payload, process.env.SECRETORPRIVATEKEY, {
-            expiresIn: '8h'
-        }, (err, token) => {
+        jwt.sign(payload, process.env.SECRETORPRIVATEKEY, (err, token) => {
             if (err) {
                 console.log(err);
                 reject("Wasn't able to generate the JWT");
@@ -21,5 +20,32 @@ const generateJWT = (uid = '') => {
 
 }
 
+const comprobeJWT = async (token = '') => {
 
-module.exports = generateJWT;
+    try {
+
+        if (token.length < 10) {
+            return null;
+        }
+
+        const { uid } = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+        const user = await User.findById(uid);
+
+        if (user) {
+            return user;
+
+        } else {
+            return null;
+        }
+
+    } catch (error) {
+        return null;
+    }
+
+}
+
+
+module.exports = {
+    generateJWT,
+    comprobeJWT
+};

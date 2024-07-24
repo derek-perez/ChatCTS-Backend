@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 
 const dbConnection = require('../db/config');
+const { socketController } = require('../sockets/controller');
 
 class Server {
 
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
+        this.server = require('http').createServer(this.app)
+        this.io = require('socket.io')(this.server, { cors: { origin: '*' } })
 
         this.paths = {
             auth: '/api/auth',
@@ -24,6 +27,10 @@ class Server {
 
         // Rutas de mi app
         this.routes();
+
+        // Sockets
+        this.sockets();
+
     }
 
     async conectarDB() {
@@ -47,11 +54,15 @@ class Server {
         this.app.use(this.paths.auth, require('../routes/auth'));
         this.app.use(this.paths.users, require('../routes/user'));
         this.app.use(this.paths.messages, require('../routes/message'));
-        this.app.use(this.paths.posts, require('../routes/post'));
+        this.app.use(this.paths.posts, require('../routes/post')(this.io));
+    }
+
+    sockets() {
+        this.io.on('connect', socketController);
     }
 
     listen() {
-        this.app.listen(this.port, () => {
+        this.server.listen(this.port, () => {
             console.log('Corriendo en puerto', this.port);
         });
     }

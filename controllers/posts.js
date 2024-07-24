@@ -15,12 +15,13 @@ const postGet = async (req, res) => {
 
 const getPostsFromUser = async (req, res) => {
     const user = await User.findById(req.params.id);
-    
+
     res.json(user.posts);
 }
 
 const postsPost = async (req, res) => {
     const { text, date, fromUser } = req.body;
+
     const post = new Post({ text, date, fromUser });
 
     await post.save();
@@ -37,7 +38,7 @@ const postsPost = async (req, res) => {
 
     addPostToUser();
 
-    res.json(post)
+    // I don't send a response because isn't neccesary at the FrontEnd
 }
 
 const postPut = async (req, res) => {
@@ -71,7 +72,7 @@ const addComment = async (req, res) => {
     })
 }
 
-const postLiked = async (req, res) => {
+const postLiked = async (req, res, io) => {
     const post = await Post.findById(req.params.id);
 
     post.likes += 1;

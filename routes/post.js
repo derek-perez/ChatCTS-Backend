@@ -19,14 +19,14 @@ router.get('/:id', [
 
 router.get('/user/:id', getPostsFromUser);
 
-router.post('/', [
-    check('text', 'Text is required').not().isEmpty(),
-    check('date', 'Text is required').not().isEmpty(),
-    check('fromUser', 'Id incorrect - Message').isMongoId(),
-    validateFields
-], postsPost);
-
-router.put('/liked/:id', postLiked);
+// This route is to add (or post) a new message, but I'm not using it because I'm using Socket.IO to chat...
+// So I cannot be doing HTTP requests to add a message...
+// router.post('/', [
+//     check('text', 'Text is required').not().isEmpty(),
+//     check('date', 'Text is required').not().isEmpty(),
+//     check('fromUser', 'Id incorrect - Message').isMongoId(),
+//     validateFields
+// ], postsPost);
 
 router.put('/comment/:id', addComment);
 
@@ -44,3 +44,9 @@ router.delete('/:id', [
 
 
 module.exports = router;
+
+module.exports = (io) => {
+    router.put('/liked/:id', (req, res) => postLiked(req, res, io));
+
+    return router;
+}

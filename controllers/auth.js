@@ -1,7 +1,7 @@
 const bcryptjs = require('bcryptjs');
 
 const User = require('../models/User');
-const generateJWT = require('../helpers/generateJWT');
+const {generateJWT} = require('../helpers/generateJWT');
 
 
 const login = async (req, res) => {
@@ -35,9 +35,14 @@ const login = async (req, res) => {
             });
         }
 
+        const token = await generateJWT(user._id);
+        
         checkIfStay();
 
-        res.json(user)
+        res.json({
+            user,
+            token
+        })
 
     } catch (error) {
         return res.status(500).json({

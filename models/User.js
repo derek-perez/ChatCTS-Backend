@@ -26,6 +26,10 @@ const UserSchema = Schema({
     info: {
         type: String
     },
+    status: {
+        type: String,
+        default: 'Online'
+    },
     phone: {
         type: String
     },
