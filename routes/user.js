@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const { usernameAlreadyExists, existsUserById } = require('../helpers/db-validators');
 const validateFields = require('../middlewares/validateFields');
 
-const { userGet, usersFriendsGet, usersPost, userFriendsPut, userPut, userDelete, getUserByUsername } = require('../controllers/users');
+const { userGet, usersFriendsGet, getFriendRequests,  usersPost, userPut, userDelete, getUserByUsername } = require('../controllers/users');
 
 
 const router = Router();
@@ -23,6 +23,10 @@ router.get('/friends/:id', [
     validateFields
 ], usersFriendsGet);
 
+// Friend requests \\
+router.get('/friendrequests/:id', getFriendRequests);
+// Friend requests \\
+
 router.post('/', [
     check('name', 'Name is required').not().isEmpty(),
     check('email', 'Email is not valid').isEmail(),
@@ -30,13 +34,14 @@ router.post('/', [
     validateFields
 ], usersPost);
 
-router.put('/friends/:id', [
-    check('id', 'Is not a valid ID').isMongoId(),
-    check('id').custom(existsUserById),
-    check('friendID', 'Is not a valid ID').isMongoId(),
-    check('friendID').custom(existsUserById),
-    validateFields
-], userFriendsPut);
+// Add a friend is being managed by Socket.IO.
+// router.put('/friends/:id', [
+//     check('id', 'Is not a valid ID').isMongoId(),
+//     check('id').custom(existsUserById),
+//     check('friendID', 'Is not a valid ID').isMongoId(),
+//     check('friendID').custom(existsUserById),
+//     validateFields
+// ], userFriendsPut);
 
 router.put('/:id', [
     check('id', 'Id incorrect - User').isMongoId(),

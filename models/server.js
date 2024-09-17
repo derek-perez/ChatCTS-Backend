@@ -54,7 +54,7 @@ class Server {
         this.app.use(this.paths.auth, require('../routes/auth'));
         this.app.use(this.paths.users, require('../routes/user'));
         this.app.use(this.paths.messages, require('../routes/message'));
-        this.app.use(this.paths.posts, require('../routes/post')(this.io));
+        this.app.use(this.paths.posts, require('../routes/post'));
     }
 
     sockets() {

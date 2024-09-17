@@ -20,7 +20,7 @@ const getPostsFromUser = async (req, res) => {
 }
 
 const postsPost = async (req, res) => {
-    const { text, date, fromUser } = req.body;
+    const { text, date, fromUser } = req;
 
     const post = new Post({ text, date, fromUser });
 
@@ -38,7 +38,7 @@ const postsPost = async (req, res) => {
 
     addPostToUser();
 
-    // I don't send a response because isn't neccesary at the FrontEnd
+    return post;
 }
 
 const postPut = async (req, res) => {
@@ -50,9 +50,9 @@ const postPut = async (req, res) => {
     res.json(post);
 }
 
-const addComment = async (req, res) => {
-    const post = await Post.findById(req.params.id);
-    const { message, date, userID, nameUser, username, profilePicture } = req.body;
+const addComment = async (req) => {
+    const { postSelected, message, date, userID, nameUser, username, profilePicture } = req;
+    const post = await Post.findById(postSelected);
 
     const msg = {
         message,
@@ -67,18 +67,16 @@ const addComment = async (req, res) => {
 
     await post.save();
 
-    res.json({
-        msg: 'Comment added succesfully'
-    })
+    return msg;
 }
 
-const postLiked = async (req, res, io) => {
-    const post = await Post.findById(req.params.id);
+const postLiked = async (req) => {
+    const { postID, userID } = req;
+    const post = await Post.findById(postID);
 
     post.likes += 1;
 
     const addPostToUserLikes = async () => {
-        const { userID } = req.body;
         const user = await User.findById(userID);
 
         user.postsLiked.push(post._id);
@@ -89,7 +87,30 @@ const postLiked = async (req, res, io) => {
 
     await post.save();
 
-    res.json(post)
+    // I don't send a response because isn't neccesary at the FrontEnd
+}
+
+const postDisliked = async (req) => {
+    const { postID, userID } = req;
+    const post = await Post.findById(postID);
+
+    post.likes -= 1;
+
+    const removePostFromUserLikes = async () => {
+        const user = await User.findById(userID);
+
+        // user.postsLiked.push(post._id);
+        const indexToRemove = user.postsLiked.indexOf(post);
+        user.postsLiked.splice(indexToRemove, 1);
+
+        await user.save();
+    }
+
+    removePostFromUserLikes();
+
+    await post.save();
+
+    // I don't send a response because isn't neccesary at the FrontEnd
 }
 
 const postDelete = async (req, res) => {
@@ -107,5 +128,6 @@ module.exports = {
     postPut,
     addComment,
     postLiked,
+    postDisliked,
     postDelete
 }

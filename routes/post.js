@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const { existsPostById } = require('../helpers/db-validators');
 const validateFields = require('../middlewares/validateFields');
 
-const { postsGet, postGet, getPostsFromUser, postsPost, postPut, postLiked, postDelete, addComment } = require('../controllers/posts');
+const { postsGet, postGet, getPostsFromUser, postPut, postLiked, postDelete } = require('../controllers/posts');
 
 
 const router = Router();
@@ -19,7 +19,7 @@ router.get('/:id', [
 
 router.get('/user/:id', getPostsFromUser);
 
-// This route is to add (or post) a new message, but I'm not using it because I'm using Socket.IO to chat...
+// This route is to add (or post) a new message. I'm not using it because I'm using Socket.IO to chat...
 // So I cannot be doing HTTP requests to add a message...
 // router.post('/', [
 //     check('text', 'Text is required').not().isEmpty(),
@@ -28,7 +28,11 @@ router.get('/user/:id', getPostsFromUser);
 //     validateFields
 // ], postsPost);
 
-router.put('/comment/:id', addComment);
+// This route is to add (or post) a new comment on the Post. I'm not using it becuase I'm using Socket.IO
+// router.put('/comment/:id', addComment);
+
+// This route is to add a "Like" to the post liked and to the 'likedPost' field of the model 'User' on DB
+// router.put('/liked/:id', postLiked);
 
 router.put('/:id', [
     check('id', 'Id incorrect - Message').isMongoId(),
@@ -44,9 +48,3 @@ router.delete('/:id', [
 
 
 module.exports = router;
-
-module.exports = (io) => {
-    router.put('/liked/:id', (req, res) => postLiked(req, res, io));
-
-    return router;
-}

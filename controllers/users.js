@@ -1,5 +1,6 @@
 const bcryptjs = require('bcryptjs');
 const User = require('../models/User');
+const FriendRequest = require('../models/FriendRequest');
 
 
 const userGet = async (req, res) => {
@@ -21,6 +22,21 @@ const usersFriendsGet = async (req, res) => {
     res.json(friends);
 }
 
+// Friend requests \\
+const getFriendRequests = async (req, res) => {
+    const id = req.params.id;
+
+    if (id === undefined || id === 'undefined') return;
+
+    const [total, allRequests] = await Promise.all([
+        FriendRequest.countDocuments(),
+        FriendRequest.find()
+    ]);
+
+    res.json(allRequests);
+}
+// Friend requests //
+
 const usersPost = async (req, res) => {
     const { name, email, password, profilePicture, info, username, socialMedia } = req.body;
     const user = new User({ name, email, password, profilePicture, info, username, socialMedia });
@@ -34,21 +50,6 @@ const usersPost = async (req, res) => {
 
     res.json(user)
 };
-
-const userFriendsPut = async (req, res) => {
-    const { friendID } = req.body;
-
-    const user = await User.findById(req.params.id);
-    user.friends.push(friendID);
-
-    const newFriend = await User.findById(friendID);
-    newFriend.friends.push(user._id);
-
-    await user.save();
-    await newFriend.save();
-
-    res.json(user);
-}
 
 const userPut = async (req, res) => {
     const id = req.params.id;
@@ -75,8 +76,8 @@ module.exports = {
     userGet,
     getUserByUsername,
     usersFriendsGet,
+    getFriendRequests,
     usersPost,
-    userFriendsPut,
     userPut,
     userDelete
 }
