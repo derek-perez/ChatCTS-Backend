@@ -119,6 +119,19 @@ const postDelete = async (req, res) => {
     res.json(post);
 }
 
+// This is for the search of posts
+const getPostsFromSearch = (req, res) => {
+    const searchTerm = req.params.search;
+
+    Post.find({ text: { $regex: searchTerm, $options: 'i' } })
+        .then(posts => {
+            res.json(posts);
+        })
+        .catch(err => {
+            console.error('Error al buscar posts:', err);
+        });
+}
+
 
 module.exports = {
     postsGet,
@@ -129,5 +142,6 @@ module.exports = {
     addComment,
     postLiked,
     postDisliked,
-    postDelete
+    postDelete,
+    getPostsFromSearch
 }

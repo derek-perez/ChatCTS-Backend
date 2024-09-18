@@ -168,17 +168,11 @@ const socketController = async (socket = new Socket()) => {
 
     // ---------- Videcall -------- \\
     socket.on('videocall-user', (props) => {
-        const { userToCall: toUser, from: fromUser, roomId } = props;
+        const { userToCall: toUser, from: fromUser, roomId, callType } = props;
         socket.join(roomId);
-
+        
         // Send the notification to the user we want to contact
-        socket.to(toUser).emit('incoming-videocall', { fromUser });
-
-        // If user rejects the videocall
-        socket.on('reject-call', (from) => {
-            console.log(from);
-            socket.to(from).emit('call-rejected');
-        });
+        socket.to(toUser).emit('incoming-videocall', { fromUser, callType });
 
         // This is when user accepts the videocall
         socket.broadcast.to(roomId).emit('user-connected', fromUser);
@@ -195,10 +189,20 @@ const socketController = async (socket = new Socket()) => {
             socket.broadcast.to(roomId).emit('ice-candidate', candidate);
         });
 
+        // When user hangs out
+        socket.on('call-ended', () => {
+            socket.broadcast.to(roomId).emit('hangout');
+        });
+
         socket.on('disconnect', () => {
             socket.broadcast.to(roomId).emit('user-disconnected', toUser);
         });
 
+    });
+
+    // This is when user rejects the call
+    socket.on('reject-call', ({ from }) => {
+        socket.to(from).emit('call-rejected');
     });
 }
 

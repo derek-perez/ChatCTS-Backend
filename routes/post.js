@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const { existsPostById } = require('../helpers/db-validators');
 const validateFields = require('../middlewares/validateFields');
 
-const { postsGet, postGet, getPostsFromUser, postPut, postLiked, postDelete } = require('../controllers/posts');
+const { postsGet, postGet, getPostsFromUser, postPut, postDelete, getPostsFromSearch } = require('../controllers/posts');
 
 
 const router = Router();
@@ -18,6 +18,9 @@ router.get('/:id', [
 ], postGet);
 
 router.get('/user/:id', getPostsFromUser);
+
+// Search posts from the searcher
+router.get('/search/:search', getPostsFromSearch);
 
 // This route is to add (or post) a new message. I'm not using it because I'm using Socket.IO to chat...
 // So I cannot be doing HTTP requests to add a message...
