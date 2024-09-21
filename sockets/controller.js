@@ -4,6 +4,7 @@ const { v4: uuid } = require('uuid');
 const User = require('../models/User');
 
 const { comprobeJWT } = require('../helpers/generateJWT');
+const { sendNotification } = require('../helpers/sendNotification');
 const { messagesPost } = require('../controllers/messages');
 const { addComment, postLiked, postDisliked, postsPost } = require('../controllers/posts');
 
@@ -63,12 +64,23 @@ const socketController = async (socket = new Socket()) => {
     // Then send back the message to the user to be displayed on UI
     socket.on('new-message', (payload, callback) => {
         messagesPost(payload)
-            .then(message => {
+            .then(async message => {
                 callback(message);
+
+                // * Send notification *
+                const sender = await User.findById(payload.fromUser);
+                const receiver = await User.findById(payload.toUser);
+
+                sendNotification(receiver.ntfSubscription, {
+                    title: `Message from: ${sender.name}`,
+                    body: message.text,
+                    // data: { url: `http://localhost:3000/chat/${sender._id}?type=chat` }
+                    data: { url: `https://chatcts-backend.onrender.com/chat/${sender._id}?type=chat` }
+                });
 
                 socket.to(payload.toUser).emit('message-added', message);
             })
-            .catch(console.log);
+            .catch((error) => {});
     });
 
 
@@ -170,7 +182,7 @@ const socketController = async (socket = new Socket()) => {
     socket.on('videocall-user', (props) => {
         const { userToCall: toUser, from: fromUser, roomId, callType } = props;
         socket.join(roomId);
-        
+
         // Send the notification to the user we want to contact
         socket.to(toUser).emit('incoming-videocall', { fromUser, callType });
 
@@ -204,6 +216,7 @@ const socketController = async (socket = new Socket()) => {
     socket.on('reject-call', ({ from }) => {
         socket.to(from).emit('call-rejected');
     });
+
 }
 
 

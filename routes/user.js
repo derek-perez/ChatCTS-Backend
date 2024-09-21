@@ -4,7 +4,16 @@ const { check } = require("express-validator");
 const { usernameAlreadyExists, existsUserById } = require('../helpers/db-validators');
 const validateFields = require('../middlewares/validateFields');
 
-const { userGet, usersFriendsGet, getFriendRequests,  usersPost, userPut, userDelete, getUserByUsername } = require('../controllers/users');
+const {
+    userGet,
+    usersFriendsGet,
+    getFriendRequests,
+    usersPost,
+    userPut,
+    userNtfSubscription,
+    userDelete,
+    getUserByUsername
+} = require('../controllers/users');
 
 
 const router = Router();
@@ -48,6 +57,12 @@ router.put('/:id', [
     check('id').custom(existsUserById),
     validateFields
 ], userPut);
+
+// Storage the subscription for the notifications
+router.put('/subscription/:email', [
+    check('email', 'Email is not correct').isEmail(),
+    validateFields
+], userNtfSubscription);
 
 router.delete('/:id', [
     check('id', 'Id incorrect - User').isMongoId(),

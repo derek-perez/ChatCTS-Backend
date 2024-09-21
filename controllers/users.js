@@ -65,6 +65,18 @@ const userPut = async (req, res) => {
     res.json(user);
 }
 
+const userNtfSubscription = async (req, res) => {
+    const email = req.params.email;
+    const { subscription } = req.body;
+
+    const user = await User.findOne({ email });
+    user.ntfSubscription = subscription;
+
+    await user.save();
+
+    res.json({ msg: 'Subscription storaged' });
+}
+
 const userDelete = async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
 
@@ -79,5 +91,6 @@ module.exports = {
     getFriendRequests,
     usersPost,
     userPut,
+    userNtfSubscription,
     userDelete
 }

@@ -23,6 +23,26 @@ const UserSchema = Schema({
         type: Boolean,
         default: false
     },
+    ntfSubscription: {
+        endpoint: {
+            type: String,
+            required: false
+        },
+        expirationTime: {
+            type: Date,
+            default: null
+        },
+        keys: {
+            p256dh: {
+                type: String,
+                required: false
+            },
+            auth: {
+                type: String,
+                required: false
+            }
+        }
+    },
     info: {
         type: String
     },

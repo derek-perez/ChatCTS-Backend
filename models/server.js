@@ -1,8 +1,15 @@
 const express = require('express');
 const cors = require('cors');
+const webPush = require('web-push');
 
 const dbConnection = require('../db/config');
 const { socketController } = require('../sockets/controller');
+
+webPush.setVapidDetails(
+    'mailto:chugus808106@gmail.com',
+    'BJVoJBK3O2LU39fPuQ8_e01kmKBvtcrKTyhmVm41SbT3dF-I73wHU6Z1Yhr8TnxRlbQtqXnIfy6ZMBqZwjZXAm4',
+    'bwUwZuPAZlDfSjBYOKz9DXukuEX4cnf-aQHQjlSzwz4'
+);
 
 class Server {
 
