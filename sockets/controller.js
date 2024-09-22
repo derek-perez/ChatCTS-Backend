@@ -75,12 +75,12 @@ const socketController = async (socket = new Socket()) => {
                     title: `Message from: ${sender.name}`,
                     body: message.text,
                     // data: { url: `http://localhost:3000/chat/${sender._id}?type=chat` }
-                    data: { url: `https://chatcts-backend.onrender.com/chat/${sender._id}?type=chat` }
+                    data: { url: `https://chatcts.netlify.app/chat/${sender._id}?type=chat` }
                 });
 
                 socket.to(payload.toUser).emit('message-added', message);
             })
-            .catch((error) => {});
+            .catch(console.log);
     });
 
 
@@ -88,7 +88,6 @@ const socketController = async (socket = new Socket()) => {
     // ° ----- Post ----- °
     // Receives the new post, add it to DB through 'postsPost' and sends it to everybody
     socket.on('add-post', (payload, callback) => {
-        // Payload: text, date, fromUser
         postsPost(payload)
             .then((payload) => {
                 socket.broadcast.emit('new-post', payload);
@@ -137,9 +136,18 @@ const socketController = async (socket = new Socket()) => {
         const { from, to } = payload;
 
         sendFriendRequest(payload)
-            .then((request) => {
+            .then(async (request) => {
                 socket.to(to.id).emit('new-friend-request', request);
                 socket.emit('friend-request-sended', request);
+
+                const receiver = await User.findById(to.id);
+
+                sendNotification(receiver.ntfSubscription, {
+                    title: 'You have a new friendship request',
+                    body: `${from.name} has sent you a friendship request`,
+                    // data: { url: `http://localhost:3000/settings/` }
+                    data: { url: `https://chatcts.netlify.app/settings/` }
+                });
 
                 callback('Sended and storaged on DB');
             })
@@ -178,13 +186,20 @@ const socketController = async (socket = new Socket()) => {
     });
 
 
-    // ---------- Videcall -------- \\
+    // ---------- Call -------- \\
     socket.on('videocall-user', (props) => {
         const { userToCall: toUser, from: fromUser, roomId, callType } = props;
         socket.join(roomId);
 
         // Send the notification to the user we want to contact
         socket.to(toUser).emit('incoming-videocall', { fromUser, callType });
+
+        sendNotification(receiver.ntfSubscription, {
+            title: `Incoming ${callType}`,
+            body: `${callType === 'call' ? 'Call' : 'Videocall'} from ${fromUser.name}`,
+            // data: { url: `http://localhost:3000/chat/${sender._id}?type=${callType}` }
+            data: { url: `https://chatcts.netlify.app/chat/${sender._id}?type=${callType}` }
+        });
 
         // This is when user accepts the videocall
         socket.broadcast.to(roomId).emit('user-connected', fromUser);
