@@ -192,15 +192,13 @@ const socketController = async (socket = new Socket()) => {
         socket.join(roomId);
 
         // Send the notification to the user we want to contact
-        socket.to(toUser).emit('incoming-videocall', { fromUser, callType });
-
         const receiver = await User.findById(toUser);
-
+        
         sendNotification(receiver.ntfSubscription, {
             title: `Incoming ${callType}`,
             body: `${callType === 'call' ? 'Call' : 'Videocall'} from ${fromUser.name}`,
-            // data: { url: `http://localhost:3000/chat/${sender._id}?type=${callType}` }
-            data: { url: `https://chatcts.netlify.app/chat/${sender._id}?type=${callType}` }
+            // data: { url: `http://localhost:3000/chat/${fromUser._id}?type=${callType}` }
+            data: { url: `https://chatcts.netlify.app/chat/${fromUser._id}?type=${callType}` }
         });
 
         // This is when user accepts the videocall
