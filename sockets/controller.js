@@ -187,12 +187,14 @@ const socketController = async (socket = new Socket()) => {
 
 
     // ---------- Call -------- \\
-    socket.on('videocall-user', (props) => {
+    socket.on('videocall-user', async (props) => {
         const { userToCall: toUser, from: fromUser, roomId, callType } = props;
         socket.join(roomId);
 
         // Send the notification to the user we want to contact
         socket.to(toUser).emit('incoming-videocall', { fromUser, callType });
+
+        const receiver = await User.findById(toUser);
 
         sendNotification(receiver.ntfSubscription, {
             title: `Incoming ${callType}`,
