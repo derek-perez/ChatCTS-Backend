@@ -17,7 +17,13 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.server = require('http').createServer(this.app)
-        this.io = require('socket.io')(this.server, { cors: { origin: '*' } })
+        this.io = require('socket.io')(this.server, {
+            cors: {
+                origin: 'https://chatcts.netlify.app',
+                methods: ['GET', 'POST'],
+                credentials: true
+            }
+        })
 
         this.paths = {
             auth: '/api/auth',
@@ -47,7 +53,14 @@ class Server {
     middlewares() {
 
         // CORS
-        this.app.use(cors());
+        this.app.use(cors({
+            origin: 'https://chatcts.netlify.app',
+            methods: ['GET', 'POST', 'PUT', 'DELETE'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'x-token'],
+            credentials: true
+        }));
+
+        this.app.options('*', cors());
 
         // Lectura y parseo del body
         this.app.use(express.json());
