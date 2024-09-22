@@ -60,7 +60,12 @@ class Server {
             credentials: true
         }));
 
-        this.app.options('*', cors());
+        this.app.options('*', cors({
+            origin: 'https://chatcts.netlify.app',
+            methods: ['GET', 'POST', 'PUT', 'DELETE'],
+            allowedHeaders: ['Content-Type', 'Authorization', 'x-token'],
+            credentials: true
+        }));
 
         // Lectura y parseo del body
         this.app.use(express.json());
