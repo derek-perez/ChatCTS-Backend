@@ -74,8 +74,8 @@ const socketController = async (socket = new Socket()) => {
                 sendNotification(receiver.ntfSubscription, {
                     title: `Message from: ${sender.name}`,
                     body: message.text,
-                    data: { url: `http://localhost:3000/chat/${sender._id}?type=chat` }
-                    // data: { url: `https://chatcts.netlify.app/chat/${sender._id}?type=chat` }
+                    // data: { url: `http://localhost:3000/chat/${sender._id}?type=chat` }
+                    data: { url: `https://chatcts.netlify.app/chat/${sender._id}?type=chat` }
                 });
 
                 socket.to(payload.toUser).emit('message-added', message);
@@ -145,8 +145,8 @@ const socketController = async (socket = new Socket()) => {
                 sendNotification(receiver.ntfSubscription, {
                     title: 'You have a new friendship request',
                     body: `${from.name} has sent you a friendship request`,
-                    data: { url: `http://localhost:3000/settings/` }
-                    // data: { url: `https://chatcts.netlify.app/settings/` }
+                    // data: { url: `http://localhost:3000/settings/` }
+                    data: { url: `https://chatcts.netlify.app/settings/` }
                 });
 
                 callback('Sended and storaged on DB');
@@ -199,8 +199,8 @@ const socketController = async (socket = new Socket()) => {
         sendNotification(receiver.ntfSubscription, {
             title: `Incoming ${callType}`,
             body: `${callType === 'call' ? 'Call' : 'Videocall'} from ${fromUser.name}`,
-            data: { url: `http://localhost:3000/chat/${fromUser._id}?type=${callType}` }
-            // data: { url: `https://chatcts.netlify.app/chat/${fromUser._id}?type=${callType}` }
+            // data: { url: `http://localhost:3000/chat/${fromUser._id}?type=${callType}` }
+            data: { url: `https://chatcts.netlify.app/chat/${fromUser._id}?type=${callType}` }
         });
 
         // This is when user accepts the videocall
